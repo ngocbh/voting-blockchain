@@ -1,7 +1,8 @@
 from block import Block
 from blockchain import Blockchain
 
-from flask import Flask, request
+from flask import Flask, request, jsonify
+from utils import get_ip
 
 import json
 import requests
@@ -66,10 +67,17 @@ def consensus():
     for block in longest_chain.chain:
         chain_data.append(block.__dict__)
 
-    return json.dumps({"length": len(chain_data),
+    return jsonify({"length": len(chain_data),
                        "chain": chain_data})
 
-
+#get current list of nodes in the network
+@app.route('/list_nodes', methods=['GET'])
+def get_node():
+    result = {
+        'Nodes in System' : list(peers),
+        'Count of Nodes' : len(peers)
+    }
+    return jsonify(result)
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
@@ -78,6 +86,7 @@ if __name__ == '__main__':
     parser.add_argument('-p', '--port', default=5002, type=int, help='port to listen on')
     args = parser.parse_args()
     port = args.port
+    myIP = get_ip()
 
-    app.run(host='0.0.0.0', port=port, debug = True, threaded = True)
+    app.run(host=myIP, port=port, debug = True, threaded = True)
 

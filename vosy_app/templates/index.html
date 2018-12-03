@@ -3,12 +3,115 @@
 
 {% block content %}
 	<br>
+	<center>
+		<a href="{{node_address}}/mine" target="_blank"><button type="button" class="themeBtn3">Mine</button></a>
+		<a href="/"><button type="button" class="themeBtn">Resync</button></a>
+		<a href="{{node_address}}/pending_tx" target="_blank><button type="button" class="themeBtn2">Pending Transaction</button></a>
+	</center>
 
+	<!-- Form Name -->
+	<legend>-> Post New Survey</legend>
+
+	<div class="container">
+		<div class="row">
+		
+		<form  class="form-horizontal" action="/submit" id="textform" method="post">
+	        <fieldset>
+	        
+	       
+	        
+	        <!-- Text input question id-->
+	        <div class="form-group">
+	          <label class="col-md-12" for="name">Question ID</label>  
+	          <div class="col-md-12">
+	          <input name="questionid" type="text" placeholder="2354" class="form-control input-md" required="">
+	          </div>
+	        </div>
+	        
+	        <!-- Textarea question -->
+	        <div class="form-group">
+	          <label class="col-md-12" for="message">Survey</label>
+	          <div class="col-md-12">                     
+	            <textarea class="form-control" placeholder="Just write a survey you want to..." name="question"></textarea>
+	          </div>
+	        </div>
+
+	        <!-- Text input answer-->
+	        <div class="form-group">
+	          <label class="col-md-12" for="email">Answer</label>  
+	          <div class="col-md-12">
+	          <input name="answer" type="text" placeholder="ans1|ans2|ans3|..." class="form-control input-md" required="">
+	          </div>
+	        </div>
+
+	        <!-- Button (Double) -->
+	        <div class="form-group">
+	          <label class="col-md-12 control-label" for="submit"></label>
+	          <div class="col-md-12">
+	            <input name="submit" type="submit" value="Submit" class="btn btn-success"></input>
+	          </div>
+	        </div>
+
+	        </fieldset>
+	    </form>
+
+		</div>
+	</div>
+
+	<!-- Form Name -->
+    <legend>-> Open Surveys</legend>
+
+	<link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css">
+	<div class="container">
+	    <div class="row">
+	    	{% for post in posts %}
+	        <div class="col-sm-8">
+	            <div class="panel panel-white post panel-shadow">
+	                <div class="post-heading">
+	                    <div class="pull-left image">
+	                        <img src="http://bootdey.com/img/Content/user_1.jpg" class="img-circle avatar" alt="user profile image">
+	                    </div>
+	                    <div class="pull-left meta">
+	                        <div class="title h5">
+	                            <a href="#"><b>{{post.author}}</b></a>
+	                            made a post with id {{post.questionid}}.
+	                        </div>
+	                        <h6 class="text-muted time">{{readable_time(post.timestamp)}}</h6>
+	                    </div>
+	                    <div class="post_box-options">
+	                    	<a href="/close_survey?id={{post.questionid}}">
+		                    	<button type="button" class="btn btn-danger btn-circle">
+		                    		<i class="glyphicon glyphicon-remove"></i>
+		                    	</button>
+	                    	</a>
+	                    </div>
+	                </div> 
+	                <div class="post-description"> 
+	                    <p>{{post.question}}</p>
+	                    {% for answer, votes in post.answers.items() %} 
+	                    <div class="stats">
+	                        <a href="/vote?id={{post.questionid}}&answer={{answer}}" class="btn btn-default stat-item">
+	                            {{answer}} | <i class="fa fa-thumbs-up icon"></i>{{len(votes)}}
+	                        </a>
+
+	                        {{votes}}
+	                    </div>
+	                    {% endfor %} 
+	                </div>
+	            </div>
+	        </div>
+	        {% endfor %} 
+	    </div>
+	</div>
+
+	<!-- 
 	<center>
 	<form action="/submit" id="textform" method="post">
-	    <textarea name="content" rows="4" cols="50" placeholder="Just write whatever you want to..."></textarea>
+		<input type="text" name="questionid" placeholder="questionid">
+		<br>
+	    <textarea name="question" rows="4" cols="50" placeholder="Just write a survey you want to..."></textarea>
 	    <br>
-	    <input type="text" name="author" placeholder="Your name">
+	    <input type="text" name="answer" placeholder="answer1|answer2|answer3...">
 	    <input type="submit" value="Post">
 	</form>
 	</center>
@@ -18,26 +121,36 @@
 	<a href="{{node_address}}/mine" target="_blank"><button>Request to mine</button></a>
 	<a href="/"><button>Resync</button></a>
 
+	<br>
+	<br>
+
 	<div style="margin: 20px;">
 
     {% for post in posts %}
     <div class="post_box">
 	   <div class="post_box-header">
-	      <div class="post_box-options"><button class="option-btn">Reply</button></div>
-	      <div style="background: rgb(0, 97, 146) none repeat scroll 0% 0%; box-shadow: rgb(0, 97, 146) 0px 0px 0px 2px;" class="post_box-avatar">{{post.author[0]}}</div>
+	      <div style="background: rgb(0, 97, 146) none repeat scroll 0% 0%; box-shadow: rgb(0, 97, 146) 0px 0px 0px 2px;" class="post_box-avatar">{{post.questionid}}</div>
 	      <div class="name-header">{{post.author}}</div>
 	      <div class="post_box-subtitle"> Posted at <i>{{readable_time(post.timestamp)}}</i></div>
 	   </div>
 	   <div>
 	      <div class="post_box-body">
-	         <p>{{post.content}}</p>
+	         <p>{{post.question}}</p>
 	      </div>
+	      {% for answer, vote in post.answers.items() %}
+	      <div class='post_box-header'>
+		      <div class="post_box-options"><button class="option-btn">Vote</button></div>
+		      <div class="name-header">{{answer}} : {{vote}} vote</div>
+	           <div class="post_box-subtitle"> Posted at <i>{{readable_time(post.timestamp)}}</i></div> 
+		  </div>
+	      {% endfor %}
 	   </div>
 	</div>
-	{% endfor %}
+	{% endfor %} -->
 
 	<style>
-		.post_box {
+
+		/*.post_box {
 		    background: #fff;
 		    padding: 12px 0px 0px 12px;
 		    margin-top: 0px;
@@ -96,7 +209,241 @@
 		    margin-right: 2px;
 		    outline: none;
 		    height: 42px;
+		}	*/	
+		.post_box-options {
+		    float: right;
 		}
+
+		.panel-shadow {
+		    box-shadow: rgba(0, 0, 0, 0.3) 7px 7px 7px;
+		}
+		.panel-white {
+		  border: 1px solid #dddddd;
+		}
+		.panel-white  .panel-heading {
+		  color: #333;
+		  background-color: #fff;
+		  border-color: #ddd;
+		}
+		.panel-white  .panel-footer {
+		  background-color: #fff;
+		  border-color: #ddd;
+		}
+
+		.post .post-heading {
+		  height: 95px;
+		  padding: 20px 15px;
+		}
+		.post .post-heading .avatar {
+		  width: 60px;
+		  height: 60px;
+		  display: block;
+		  margin-right: 15px;
+		}
+		.post .post-heading .meta .title {
+		  margin-bottom: 0;
+		}
+		.post .post-heading .meta .title a {
+		  color: black;
+		}
+		.post .post-heading .meta .title a:hover {
+		  color: #aaaaaa;
+		}
+		.post .post-heading .meta .time {
+		  margin-top: 8px;
+		  color: #999;
+		}
+		.post .post-image .image {
+		  width: 100%;
+		  height: auto;
+		}
+		.post .post-description {
+		  padding: 15px;
+		}
+		.post .post-description p {
+		  font-size: 14px;
+		}
+		.post .post-description .stats {
+		  margin-top: 20px;
+		}
+		.post .post-description .stats .stat-item {
+		  display: inline-block;
+		  margin-right: 15px;
+		}
+		.post .post-description .stats .stat-item .icon {
+		  margin-right: 8px;
+		}
+		.post .post-footer {
+		  border-top: 1px solid #ddd;
+		  padding: 15px;
+		}
+		.post .post-footer .input-group-addon a {
+		  color: #454545;
+		}
+		.post .post-footer .comments-list {
+		  padding: 0;
+		  margin-top: 20px;
+		  list-style-type: none;
+		}
+		.post .post-footer .comments-list .comment {
+		  display: block;
+		  width: 100%;
+		  margin: 20px 0;
+		}
+		.post .post-footer .comments-list .comment .avatar {
+		  width: 35px;
+		  height: 35px;
+		}
+		.post .post-footer .comments-list .comment .comment-heading {
+		  display: block;
+		  width: 100%;
+		}
+		.post .post-footer .comments-list .comment .comment-heading .user {
+		  font-size: 14px;
+		  font-weight: bold;
+		  display: inline;
+		  margin-top: 0;
+		  margin-right: 10px;
+		}
+		.post .post-footer .comments-list .comment .comment-heading .time {
+		  font-size: 12px;
+		  color: #aaa;
+		  margin-top: 0;
+		  display: inline;
+		}
+		.post .post-footer .comments-list .comment .comment-body {
+		  margin-left: 50px;
+		}
+		.post .post-footer .comments-list .comment > .comments-list {
+		  margin-left: 50px;
+		}
+		body{margin:40px;}
+
+		.btn-circle {
+		  width: 30px;
+		  height: 30px;
+		  text-align: center;
+		  padding: 6px 0;
+		  font-size: 12px;
+		  line-height: 1.428571429;
+		  border-radius: 15px;
+		}
+		.btn-circle.btn-lg {
+		  width: 50px;
+		  height: 50px;
+		  padding: 10px 16px;
+		  font-size: 18px;
+		  line-height: 1.33;
+		  border-radius: 25px;
+		}
+		.btn-circle.btn-xl {
+		  width: 70px;
+		  height: 70px;
+		  padding: 10px 16px;
+		  font-size: 24px;
+		  line-height: 1.33;
+		  border-radius: 35px;
+		}
+
+		.margin{
+		    margin-top:20px;    
+		    margin-bottom:20px;
+		}
+
+		.themeBtn {
+		    background: #ff5c00;
+		    color: #ffffff !important;
+		    display: inline-block;
+		    font-size: 15px;
+		    font-weight: 500;
+		    height: 50px;
+		    line-height: 0.8;
+		    padding: 18px 30px;
+		    text-transform: capitalize;
+		    border-radius: 1px;
+		    letter-spacing: 0.5px;
+			border:0px !important;
+			cursor:pointer;
+			border-radius:100px;
+
+		}
+		a:hover{
+		    color: #ffffff;
+		    text-decoration:none;
+		}
+		.themeBtn:hover {
+		    background: rgb(255, 92, 0);
+		    color: #ffffff;
+		    box-shadow: 0 10px 25px -2px rgba(255, 92, 0, 0.6);
+		}
+		.themeBtn2 {
+		    background: #7600ff;
+		    color: #ffffff !important;
+		    display: inline-block;
+		    font-size: 15px;
+		    font-weight: 500;
+		    height: 50px;
+		    line-height: 0.8;
+		    padding: 18px 30px;
+		    text-transform: capitalize;
+		    border-radius: 1px;
+		    letter-spacing: 0.5px;
+			border:0px !important;
+			cursor:pointer;
+			border-radius:100px;
+
+		}
+		.themeBtn2:hover {
+		    background: rgb(118, 0, 255);
+		    color: #ffffff;
+		    box-shadow: 0 10px 25px -2px rgba(118, 0, 255, 0.6);
+		}
+		.themeBtn3 {
+		    background: #ff2e4d;
+		    color: #ffffff !important;
+		    display: inline-block;
+		    font-size: 15px;
+		    font-weight: 500;
+		    height: 50px;
+		    line-height: 0.8;
+		    padding: 18px 30px;
+		    text-transform: capitalize;
+		    border-radius: 1px;
+		    letter-spacing: 0.5px;
+			border:0px !important;
+			cursor:pointer;
+			border-radius:100px;
+
+		}
+		.themeBtn3:hover {
+		    background: rgb(255, 46, 77);
+		    color: #ffffff;
+		    box-shadow: 0 10px 25px -2px rgba(255, 46, 77, 0.6);
+		}
+		.themeBtn4 {
+		    background: #006eff;
+		    color: #ffffff !important;
+		    display: inline-block;
+		    font-size: 15px;
+		    font-weight: 500;
+		    height: 50px;
+		    line-height: 0.8;
+		    padding: 18px 30px;
+		    text-transform: capitalize;
+		    border-radius: 1px;
+		    letter-spacing: 0.5px;
+			border:0px !important;
+			cursor:pointer;
+			border-radius:100px;
+
+		}
+		.themeBtn4:hover {
+		    background: rgb(0, 110, 255);
+		    color: #ffffff;
+		    box-shadow: 0 10px 25px -2px rgba(0, 110, 255, 0.6);
+		}
+
+
 	</style>
     </div>
 {% endblock %}

@@ -1,12 +1,22 @@
 from flask import Flask
-from flask import render_template, redirect, request
+from flask import render_template, redirect, request, jsonify
 
-import datetime
+from utils import get_ip
+
+import datetime, time
 import json
 
 import requests
 
 app = Flask(__name__)
+
+@app.context_processor
+def my_utility_processor():
+
+    def len_list(li):
+        return len(li)
+
+    return dict(len=len_list)
 
 
 # The node with which our application interacts, there can be multiple
@@ -21,19 +31,15 @@ def fetch_posts():
     Function to fetch the chain from a blockchain node, parse the
     data and store it locally.
     """
-    get_chain_address = "{}/chain".format(CONNECTED_NODE_ADDRESS)
+    get_chain_address = "{}/open_surveys".format(CONNECTED_NODE_ADDRESS)
     response = requests.get(get_chain_address)
     if response.status_code == 200:
         content = []
-        chain = json.loads(response.content)
-        for block in chain["chain"]:
-            for tx in block["transactions"]:
-                tx["index"] = block["index"]
-                tx["hash"] = block["previous_hash"]
-                content.append(tx)
+        data = json.loads(response.content)
+        surveys = data['surveys']
 
         global posts
-        posts = sorted(content, key=lambda k: k['timestamp'],
+        posts = sorted(surveys, key=lambda k: k['timestamp'],
                        reverse=True)
 
 
@@ -41,8 +47,7 @@ def fetch_posts():
 def index():
     fetch_posts()
     return render_template('index.html',
-                           title='YourNet: Decentralized '
-                                 'content sharing',
+                           title='A Simple Blockchain based Voting System',
                            posts=posts,
                            node_address=CONNECTED_NODE_ADDRESS,
                            readable_time=timestamp_to_string)
@@ -53,12 +58,81 @@ def submit_textarea():
     """
     Endpoint to create a new transaction via our application.
     """
-    post_content = request.form["content"]
-    author = request.form["author"]
+
+    author = get_ip()
+    questionid = request.form["questionid"]
+    question = request.form["question"]
+    answersList = request.form["answer"].split('|')
+    answers = {}
+
+    for answer in answersList:
+        answers[answer] = []
 
     post_object = {
-        'author': author,
-        'content': post_content,
+        'type' : 'open',
+        'content' : {
+            'questionid': questionid,
+            'question': question,
+            'answers': answers,
+            'author': author + ':5000',
+            'timestamp': time.time()
+        }
+    }
+
+    # Submit a transaction
+    new_tx_address = "{}/new_transaction".format(CONNECTED_NODE_ADDRESS)
+
+    requests.post(new_tx_address,
+                  json=post_object,
+                  headers={'Content-type': 'application/json'})
+
+    return redirect('/')
+
+@app.route('/close_survey', methods=['GET','POST'])
+def close_survey():
+    """
+    Endpoint to create a new transaction via our application.
+    """
+
+    author = get_ip()
+    questionid = request.args.get('id')
+
+    post_object = {
+        'type' : 'close',
+        'content' : {
+            'questionid': questionid,
+            'author': author + ':5000',
+            'timestamp': time.time()
+        }
+    }
+
+    # Submit a transaction
+    new_tx_address = "{}/new_transaction".format(CONNECTED_NODE_ADDRESS)
+
+    requests.post(new_tx_address,
+                  json=post_object,
+                  headers={'Content-type': 'application/json'})
+
+    return redirect('/')
+
+@app.route('/vote', methods=['GET','POST'])
+def vote():
+    """
+    Endpoint to create a new transaction via our application.
+    """
+
+    author = get_ip()
+    questionid = request.args.get('id')
+    answer = request.args.get('answer')
+
+    post_object = {
+        'type' : 'vote',
+        'content' : {
+            'questionid': questionid,
+            'author': author + ':5000',
+            'vote': answer,
+            'timestamp': time.time()
+        }
     }
 
     # Submit a transaction
@@ -78,10 +152,14 @@ def timestamp_to_string(epoch_time):
 if __name__ == '__main__':
     from argparse import ArgumentParser
 
+    myIP = get_ip()
     parser = ArgumentParser()
     parser.add_argument('-p', '--port', default=8080, type=int, help='port to listen on')
+    parser.add_argument('--host', default=myIP, type=str, help='port to listen on')
     args = parser.parse_args()
     port = args.port
 
-    app.run(host='0.0.0.0', port=port, debug = True, threaded = True)
+    CONNECTED_NODE_ADDRESS = 'http://{}:5000'.format(args.host)
+
+    app.run(host=myIP, port=port, debug = True, threaded = True)
 

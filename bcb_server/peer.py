@@ -38,6 +38,23 @@ def new_transaction():
 
     blockchain.add_new_transaction(tx_data)
 
+    url = 'http://{}/broadcast_transaction'.format(ordererIP + ':' + ordererPort)
+    response = requests.post(url, json=tx_data)
+
+    return "Success", 201
+
+# endpoint to get a new transaction from another node. 
+@app.route('/get_transaction', methods=['POST'])
+def get_transaction():
+    tx_data = request.get_json()
+    required_fields = ["type", "content", "timestamp"]
+
+    for field in required_fields:
+        if not tx_data.get(field):
+            return "Invalid transaction data", 404
+
+    blockchain.add_new_transaction(tx_data)
+
     return "Success", 201
 
 # endpoint to return the node's copy of the chain.
@@ -62,7 +79,7 @@ def get_open_surveys():
         # recompute open_surveys
         open_surveys = {}
 
-        for block in blockchain.chain:
+        for block in longest_chain.chain:
             if not compute_open_surveys(block,open_surveys):
                 return "Invalid Blockchain", 400
 
@@ -96,7 +113,7 @@ def get_chain():
         # recompute open_surveys
         open_surveys = {}
 
-        for block in blockchain.chain:
+        for block in longest_chain.chain:
             if not compute_open_surveys(block,open_surveys):
                 return "Invalid Blockchain", 400
 
@@ -201,6 +218,16 @@ def validate_and_add_block():
 @app.route('/pending_tx')
 def get_pending_tx():
     return jsonify(blockchain.unconfirmed_transactions)
+
+@app.route('/list_nodes', methods=['GET','POST'])
+def list_node():
+    url = 'http://{}/list_nodes'.format(ordererIP + ':' + ordererPort)
+    response = requests.get(url)
+
+    data = response.json()
+
+    return jsonify(data)
+
 
 def validate_transaction(transaction):
     global open_surveys

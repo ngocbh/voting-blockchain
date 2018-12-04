@@ -43,6 +43,23 @@ def announce_new_block():
 
     return "Success", 201
 
+@app.route('/broadcast_transaction', methods=['POST'])
+def announce_new_transaction():
+    """
+    A function to announce to the network once a transaction has been added.
+    Other blocks can simply verify the proof of work and add it to their
+    respective chains.
+    """
+    data = request.get_json()
+    if not data:
+        return "Invalid data at announce_new_block", 400
+
+    for peer in peers:
+        url = "http://{}/get_transaction".format(peer)
+        requests.post(url, json=block.__dict__)
+
+    return "Success", 201
+
 @app.route('/consensus', methods=['GET'])
 def consensus():
     """
@@ -57,12 +74,16 @@ def consensus():
         length = response.json()['length']
         chain = response.json()['chain']
         new_blockchain = Blockchain.fromList(chain)
+        print(peer)
+        print(new_blockchain.__dict__)
 
         if length > current_len and longest_chain.check_chain_validity(new_blockchain.chain):
             current_len = length
             longest_chain = new_blockchain
     
     chain_data = []
+
+    print(longest_chain.__dict__)
 
     for block in longest_chain.chain:
         chain_data.append(block.__dict__)
@@ -71,7 +92,7 @@ def consensus():
                        "chain": chain_data})
 
 #get current list of nodes in the network
-@app.route('/list_nodes', methods=['GET'])
+@app.route('/list_nodes', methods=['GET','POST'])
 def get_node():
     result = {
         'Nodes in System' : list(peers),

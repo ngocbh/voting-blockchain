@@ -37,7 +37,11 @@ def announce_new_block():
     if not block:
     	return "Invalid data at announce_new_block", 400
 
+    request_addr = request.remote_addr
+
     for peer in peers:
+        if peer.find(request_addr) != -1:
+            continue
         url = "http://{}/add_block".format(peer)
         requests.post(url, json=block.__dict__)
 
@@ -54,9 +58,13 @@ def announce_new_transaction():
     if not data:
         return "Invalid data at announce_new_block", 400
 
+    request_addr = request.remote_addr
+    
     for peer in peers:
+        if peer.find(request_addr) != -1:
+            continue
         url = "http://{}/get_transaction".format(peer)
-        requests.post(url, json=block.__dict__)
+        requests.post(url, json=data)
 
     return "Success", 201
 
@@ -74,16 +82,12 @@ def consensus():
         length = response.json()['length']
         chain = response.json()['chain']
         new_blockchain = Blockchain.fromList(chain)
-        print(peer)
-        print(new_blockchain.__dict__)
 
         if length > current_len and longest_chain.check_chain_validity(new_blockchain.chain):
             current_len = length
             longest_chain = new_blockchain
     
     chain_data = []
-
-    print(longest_chain.__dict__)
 
     for block in longest_chain.chain:
         chain_data.append(block.__dict__)

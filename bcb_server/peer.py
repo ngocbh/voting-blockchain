@@ -248,7 +248,7 @@ def validate_transaction(transaction):
         open_surveys[questionid] = transaction['content']
         return True
     elif transaction['type'].lower() == 'close':
-        if open_surveys[questionid] and open_surveys[questionid]['author'] == transaction['content']['author']:
+        if questionid in open_surveys and open_surveys[questionid]['author'] == transaction['content']['author']:
             del open_surveys[questionid]
             return True
         return False

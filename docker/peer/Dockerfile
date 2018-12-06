@@ -1,5 +1,5 @@
 FROM python:2.7       
-ADD . .
+COPY . .
 EXPOSE 5001
 
 RUN pip install -r requirements.txt

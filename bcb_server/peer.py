@@ -165,13 +165,14 @@ def mine_unconfirmed_transactions():
 
         new_block.transactions.append(transaction)
 
+    blockchain.unconfirmed_transactions = []
+    
     if ( len(new_block.transactions) == 0 ):
         return jsonify({"response": "None transactions"})
 
     proof = blockchain.proof_of_work(new_block)
     blockchain.add_block(new_block, proof)
 
-    blockchain.unconfirmed_transactions = []
     # announce it to the network
     url = 'http://{}/broadcast_block'.format(ordererIP + ':' + ordererPort)
     response = requests.post(url, json=new_block.__dict__)

@@ -1,6 +1,6 @@
 import socket
 
-def get_ip(remote_addr):
+def get_ip(remote_addr = '127.0.0.1'):
 
     if remote_addr != '127.0.0.1':
         return remote_addr

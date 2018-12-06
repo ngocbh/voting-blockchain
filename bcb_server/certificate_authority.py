@@ -26,11 +26,13 @@ groups[get_ip() + ':5000'] = 'admin'
 def validate_connection():
 
 	data = request.get_json()
+	request_addr = request.remote_addr
 
 	if not data:
 		return 'Invalid data' , 400
 
-	node = data['ipaddress']
+	# node = data['ipaddress']
+	node = request_addr + ':' + str(data['port'])
 
 	if not node: 
 		return 'Invalid data' , 400
@@ -41,7 +43,10 @@ def validate_connection():
 	groups[node] = 'peer'
 
 	url = 'http://{}:5002/add_node'.format(orderer)
-	response = requests.post(url,json=data)
+	response = requests.post(url,json={'ipaddress': request_addr, 'port': data['port']})
+
+	if response.status_code >= 400:
+		return 'Error to connect to orderer', 400
 
 	return "Success", 201
 
@@ -70,10 +75,12 @@ if __name__ == '__main__':
 
     parser = ArgumentParser()
     parser.add_argument('-p', '--port', default=5001, type=int, help='port to listen on')
+    parser.add_argument('--orderer', default='0.0.0.0', type=str, help='port to listen on')
     args = parser.parse_args()
     port = args.port
+    orderer = args.orderer
 
-    myIP = get_ip()
-    orderer = get_ip()
+    print('My ip address : ' + get_ip())
 
-    app.run(host=myIP, port=port, debug = True, threaded = True)
+    app.run(host='0.0.0.0', port=port, debug = True, threaded = True)
+

@@ -293,12 +293,18 @@ def compute_open_surveys(block, open_surveys):
     return True
 
 # ask ca server to join network
-def join_to_network(orderer, ca, me):
-    url = 'http://{}/add_node'.format(ca)
-
-    response = requests.post(url, json={'ipaddress' : me})
-    print(response)
-
+def join_to_network(orderer, ca, myIP, myPort):
+    try:
+        url = 'http://{}/add_node'.format(ca)
+        print(url)
+        response = requests.post(url, json={'ipaddress' : myIP, 'port' : myPort})
+        print(response)
+        print('Connection successfull')
+        return True
+    except:
+        print("Connection refused by the server..")
+        
+        return False
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
@@ -307,15 +313,20 @@ if __name__ == '__main__':
     
     parser = ArgumentParser()
     parser.add_argument('-p', '--port', default=5000, type=int, help='port to listen on')
-    parser.add_argument('-c', '--ca', default=myIP, type=str, help='port to listen on')
-    parser.add_argument('-o', '--orderer', default=myIP, type=str, help='port to listen on')
+    parser.add_argument('-c', '--ca', default='0.0.0.0', type=str, help='port to listen on')
+    parser.add_argument('-o', '--orderer', default='0.0.0.0', type=str, help='port to listen on')
     args = parser.parse_args()
     port = args.port
     caIP = args.ca
     ordererIP = args.orderer
+
+    print('My ip address : ' + get_ip())
     
+    # time.sleep(5)
+    # join_to_network(ordererIP + ':' + ordererPort, caIP + ':' + caPort, myIP, port)
+    while not join_to_network(ordererIP + ':' + ordererPort, caIP + ':' + caPort, myIP, port):
+        print("Let me sleep for 5 seconds")
+        time.sleep(5)
 
-    join_to_network(ordererIP + ':' + ordererPort, caIP + ':' + caPort, myIP + ':' + str(port))
-
-    app.run(host=myIP, port=port, debug = True, threaded = True)
+    app.run(host='0.0.0.0', port=port, debug = True, threaded = True)
 

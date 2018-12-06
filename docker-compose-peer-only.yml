@@ -1,0 +1,28 @@
+version: '3'
+
+
+services: 
+  peer.org1.bcbvosy.com:
+    container_name: peer.org1.bcbvosy.com
+    build:
+      context: .
+      dockerfile: ./docker/peer/Dockerfile
+    environment:
+      - ORDERER_IP=${ORDERER_IP}
+      - CA_IP=${CA_IP}
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/code
+
+  vosy.org1.bcbvosy.com:
+    container_name: vosy.org1.bcbvosy.com
+    build:
+      context: .
+      dockerfile: ./docker/vosy/Dockerfile
+    environment:
+      - HOST_IP=peer.org1.bcbvosy.com
+    ports:
+      - "8080:8080"
+    volumes: 
+      - .:/code

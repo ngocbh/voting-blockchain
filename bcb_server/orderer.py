@@ -17,7 +17,13 @@ peers = set()
 @app.route('/add_node', methods=['POST'])
 def register_new_peers():
     data = request.get_json()
-    node = data['ipaddress']
+
+    if not data:
+        return 'Invalid data' , 400
+
+    request_addr = data['ipaddress']
+    port = data['port']
+    node = request_addr + ':' + str(port)
 
     if not node:
         return "Invalid data", 400
@@ -39,11 +45,20 @@ def announce_new_block():
 
     request_addr = request.remote_addr
 
+    offline_node = []
+
     for peer in peers:
-        if peer.find(request_addr) != -1:
-            continue
-        url = "http://{}/add_block".format(peer)
-        requests.post(url, json=block.__dict__)
+        try:
+            if peer.find(request_addr) != -1:
+                continue
+            url = "http://{}/add_block".format(peer)
+            requests.post(url, json=block.__dict__)
+        except requests.exceptions.ConnectionError:
+            print('Cant connect to node {}. Remove it from peers list'.format(peer))
+            offline_node.append(peer)
+
+    for peer in offline_node:
+        peers.remove(peer)
 
     return "Success", 201
 
@@ -59,12 +74,21 @@ def announce_new_transaction():
         return "Invalid data at announce_new_block", 400
 
     request_addr = request.remote_addr
-    
+
+    offline_node = []
+
     for peer in peers:
-        if peer.find(request_addr) != -1:
-            continue
-        url = "http://{}/get_transaction".format(peer)
-        requests.post(url, json=data)
+        try:
+            if peer.find(request_addr) != -1:
+                continue
+            url = "http://{}/get_transaction".format(peer)
+            requests.post(url, json=data)
+        except requests.exceptions.ConnectionError:
+            print('Cant connect to node {}. Remove it from peers list'.format(peer))
+            offline_node.append(peer)
+
+    for peer in offline_node:
+        peers.remove(peer)
 
     return "Success", 201
 
@@ -77,15 +101,24 @@ def consensus():
     longest_chain = Blockchain()
     current_len = len(longest_chain.chain)
     
+    offline_node = []
+    
     for peer in peers:
-        response = requests.get('http://{}/local_chain'.format(peer))
-        length = response.json()['length']
-        chain = response.json()['chain']
-        new_blockchain = Blockchain.fromList(chain)
+        try:
+            response = requests.get('http://{}/local_chain'.format(peer))
+            length = response.json()['length']
+            chain = response.json()['chain']
+            new_blockchain = Blockchain.fromList(chain)
 
-        if length > current_len and longest_chain.check_chain_validity(new_blockchain.chain):
-            current_len = length
-            longest_chain = new_blockchain
+            if length > current_len and longest_chain.check_chain_validity(new_blockchain.chain):
+                current_len = length
+                longest_chain = new_blockchain
+        except requests.exceptions.ConnectionError:
+            print('Cant connect to node {}. Remove it from peers list'.format(peer))
+            offline_node.append(peer)
+
+    for peer in offline_node:
+        peers.remove(peer)
     
     chain_data = []
 
@@ -111,7 +144,8 @@ if __name__ == '__main__':
     parser.add_argument('-p', '--port', default=5002, type=int, help='port to listen on')
     args = parser.parse_args()
     port = args.port
-    myIP = get_ip()
 
-    app.run(host=myIP, port=port, debug = True, threaded = True)
+    print('My ip address : ' + get_ip())
+
+    app.run(host='0.0.0.0', port=port, debug = True, threaded = True)
 

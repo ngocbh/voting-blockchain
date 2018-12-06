@@ -1,0 +1,53 @@
+version: '3'
+
+
+services: 
+  orderer.org1.bcbvosy.com:
+    container_name: orderer.org1.bcbvosy.com
+    build: 
+      context: .
+      dockerfile: ./docker/orderer/Dockerfile
+    ports:
+      - "5002:5002"
+    volumes:
+      - .:/code
+
+  ca.org1.bcbvosy.com:
+    container_name: ca.org1.bcbvosy.com
+    build: 
+      context: .
+      dockerfile: ./docker/certificate_authority/Dockerfile
+    environment:
+      - ORDERER_IP=orderer.org1.bcbvosy.com
+    ports:
+      - "5001:5001"
+    volumes:
+      - .:/code
+
+  peer.org1.bcbvosy.com:
+    container_name: peer.org1.bcbvosy.com
+    build:
+      context: .
+      dockerfile: ./docker/peer/Dockerfile
+    environment:
+      - ORDERER_IP=orderer.org1.bcbvosy.com
+      - CA_IP=ca.org1.bcbvosy.com
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/code
+    depends_on:
+      - orderer.org1.bcbvosy.com
+      - ca.org1.bcbvosy.com
+
+  vosy.org1.bcbvosy.com:
+    container_name: vosy.org1.bcbvosy.com
+    build:
+      context: .
+      dockerfile: ./docker/vosy/Dockerfile
+    environment:
+      - HOST_IP=peer.org1.bcbvosy.com
+    ports:
+      - "8080:8080"
+    volumes: 
+      - .:/code

@@ -43,7 +43,7 @@ def announce_new_block():
     if not block:
     	return "Invalid data at announce_new_block", 400
 
-    request_addr = request.remote_addr
+    request_addr = get_ip(request.remote_addr)
 
     offline_node = []
 
@@ -73,7 +73,7 @@ def announce_new_transaction():
     if not data:
         return "Invalid data at announce_new_block", 400
 
-    request_addr = request.remote_addr
+    request_addr = get_ip(request.remote_addr)
 
     offline_node = []
 

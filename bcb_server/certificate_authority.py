@@ -26,7 +26,7 @@ groups[get_ip() + ':5000'] = 'admin'
 def validate_connection():
 
 	data = request.get_json()
-	request_addr = request.remote_addr
+	request_addr = get_ip(request.remote_addr)
 
 	if not data:
 		return 'Invalid data' , 400

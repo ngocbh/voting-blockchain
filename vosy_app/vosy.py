@@ -88,7 +88,7 @@ def submit_textarea():
     Endpoint to create a new transaction via our application.
     """
 
-    author = get_ip()
+    author = get_ip(request.remote_addr)
     questionid = request.form["questionid"]
     question = request.form["question"]
     answersList = request.form["answer"].split('|')
@@ -123,7 +123,7 @@ def close_survey():
     Endpoint to create a new transaction via our application.
     """
 
-    author = get_ip()
+    author = get_ip(request.remote_addr)
     questionid = request.args.get('id')
 
     post_object = {
@@ -150,7 +150,7 @@ def vote():
     Endpoint to create a new transaction via our application.
     """
 
-    author = get_ip()
+    author = get_ip(request.remote_addr)
     questionid = request.args.get('id')
     answer = request.args.get('answer')
 

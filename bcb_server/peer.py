@@ -149,7 +149,7 @@ def mine_unconfirmed_transactions():
     """
 
     if not blockchain.unconfirmed_transactions:
-        return "None transactions"
+        return jsonify({"response": "None transactions"})
 
     last_block = blockchain.last_block
 
@@ -166,7 +166,7 @@ def mine_unconfirmed_transactions():
         new_block.transactions.append(transaction)
 
     if ( len(new_block.transactions) == 0 ):
-        return "None transactions"
+        return jsonify({"response": "None transactions"})
 
     proof = blockchain.proof_of_work(new_block)
     blockchain.add_block(new_block, proof)
@@ -179,8 +179,8 @@ def mine_unconfirmed_transactions():
     result = new_block.index
 
     if not result:
-        return "No transactions to mine"
-    return "Block #{} is mined.".format(result)
+        return jsonify({"response": "None transactions to mine"})
+    return jsonify({"response": "Block #{} is mined.".format(result)})
 
 
 # endpoint to add a block mined by someone else to

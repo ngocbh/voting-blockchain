@@ -52,6 +52,35 @@ def index():
                            node_address=CONNECTED_NODE_ADDRESS,
                            readable_time=timestamp_to_string)
 
+@app.route('/mine', methods=['GET','POST'])
+def mine():
+    
+    url = '{}/mine'.format(CONNECTED_NODE_ADDRESS)
+    response = requests.get(url)
+
+    data = response.json()['response']
+    return data
+
+@app.route('/pending_tx', methods=['GET','POST'])
+def get_pending_tx():
+
+    url = '{}/pending_tx'.format(CONNECTED_NODE_ADDRESS)
+    response = requests.get(url)
+
+    data = response.json()
+
+    return jsonify(data)
+
+@app.route('/list_nodes', methods=['GET','POST'])
+def get_list_nodes():
+
+    url = '{}/list_nodes'.format(CONNECTED_NODE_ADDRESS)
+    response = requests.get(url)
+
+    data = response.json()
+
+    return jsonify(data)
+
 
 @app.route('/submit', methods=['POST'])
 def submit_textarea():

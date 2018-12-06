@@ -4,10 +4,10 @@
 {% block content %}
 	<br>
 	<center>
-		<a href="{{node_address}}/mine" target="_blank"><button type="button" class="themeBtn3">Mine</button></a>
+		<a href="/mine" target="_blank"><button type="button" class="themeBtn3">Mine</button></a>
 		<a href="/"><button type="button" class="themeBtn">Resync</button></a>
-		<a href="{{node_address}}/pending_tx" target="_blank><button type="button" class="themeBtn2">Pending Transaction</button></a>
-		<a href="{{node_address}}/list_nodes"><button type="button" class="themeBtn4">List Node</button></a>
+		<a href="/pending_tx" target="_blank><button type="button" class="themeBtn2">Pending Transaction</button></a>
+		<a href="/list_nodes"><button type="button" class="themeBtn4">List Node</button></a>
 	</center>
 
 	<!-- Form Name -->
@@ -18,9 +18,7 @@
 		
 		<form  class="form-horizontal" action="/submit" id="textform" method="post">
 	        <fieldset>
-	        
 	       
-	        
 	        <!-- Text input question id-->
 	        <div class="form-group">
 	          <label class="col-md-12" for="name">Question ID</label>  

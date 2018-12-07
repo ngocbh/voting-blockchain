@@ -9,6 +9,7 @@ services:
       dockerfile: ./docker/orderer/Dockerfile
     ports:
       - "5002:5002"
+    # network_mode: "host"
     volumes:
       - .:/code
 
@@ -21,6 +22,7 @@ services:
       - ORDERER_IP=orderer.org1.bcbvosy.com
     ports:
       - "5001:5001"
+    # network_mode: "host"
     volumes:
       - .:/code
 
@@ -34,6 +36,7 @@ services:
       - CA_IP=ca.org1.bcbvosy.com
     ports:
       - "5000:5000"
+    # network_mode: "host"
     volumes:
       - .:/code
     depends_on:
@@ -49,5 +52,6 @@ services:
       - HOST_IP=peer.org1.bcbvosy.com
     ports:
       - "8080:8080"
+    # network_mode: "host"
     volumes: 
       - .:/code

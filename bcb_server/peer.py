@@ -149,7 +149,7 @@ def mine_unconfirmed_transactions():
     """
 
     if not blockchain.unconfirmed_transactions:
-        return jsonify({"response": "None transactions"})
+        return jsonify({"response": "None transactions 0x001"})
 
     last_block = blockchain.last_block
 
@@ -168,7 +168,7 @@ def mine_unconfirmed_transactions():
     blockchain.unconfirmed_transactions = []
     
     if ( len(new_block.transactions) == 0 ):
-        return jsonify({"response": "None transactions"})
+        return jsonify({"response": "None transactions 0x002"})
 
     proof = blockchain.proof_of_work(new_block)
     blockchain.add_block(new_block, proof)
@@ -180,7 +180,7 @@ def mine_unconfirmed_transactions():
     result = new_block.index
 
     if not result:
-        return jsonify({"response": "None transactions to mine"})
+        return jsonify({"response": "None transactions to mine 0x002"})
     return jsonify({"response": "Block #{} is mined.".format(result)})
 
 
@@ -226,7 +226,7 @@ def list_node():
     response = requests.get(url)
 
     data = response.json()
-
+  
     return jsonify(data)
 
 
@@ -238,6 +238,7 @@ def validate_transaction(transaction):
     response = requests.post(url,json={'peer' : author, 'action' : transaction['type']})
 
     if response.json()['decision'] != 'accept':
+        print("Reject from server")
         return False
 
     #check validate transaction and compute open_surveys
@@ -297,9 +298,7 @@ def compute_open_surveys(block, open_surveys):
 def join_to_network(orderer, ca, myIP, myPort):
     try:
         url = 'http://{}/add_node'.format(ca)
-        print(url)
         response = requests.post(url, json={'ipaddress' : myIP, 'port' : myPort})
-        print(response)
         print('Connection successfull')
         return True
     except:

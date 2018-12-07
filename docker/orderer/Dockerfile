@@ -1,7 +1,9 @@
 FROM python:2.7       
-COPY . .
+COPY . /code
 EXPOSE 5001
+
+WORKDIR /code
+
 RUN pip install -r requirements.txt
 
-WORKDIR /bcb_server
-ENTRYPOINT python orderer.py
+ENTRYPOINT python bcb_server/orderer.py

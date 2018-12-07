@@ -12,6 +12,7 @@ services:
       - CA_IP=${CA_IP}
     ports:
       - "5000:5000"
+    # network_mode: "host"
     volumes:
       - .:/code
 
@@ -24,5 +25,6 @@ services:
       - HOST_IP=peer.org1.bcbvosy.com
     ports:
       - "8080:8080"
+    # network_mode: "host"
     volumes: 
       - .:/code

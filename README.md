@@ -143,4 +143,6 @@ It also have consensus method, which can return the longest blockchain in the ne
 
 It hold all data about blockchain, it have some method like mine, validate_transaction, return chain, open surveys, ...
 
+#### Vosy
 
+A blockchain-based application for voting system

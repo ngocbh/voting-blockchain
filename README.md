@@ -8,8 +8,8 @@ A simple  blockchain-based voting system application from scratch in Python. It'
 
 ## Instructions to run
 
-To understand, read [system architechture](https://github.com/ngocjr7bcb_vosy#tutorial)
-This project can run separately by [python](https://github.com/ngocjr7bcb_vosy#running-by-docker-compose) or use [docker-compose](https://github.com/ngocjr7bcb_vosy#running-by-python-command)
+To understand, read [system architechture](https://github.com/ngocjr7/bcb_vosy#tutorial)
+This project can run separately by [python](https://github.com/ngocjr7/bcb_vosy#running-by-docker-compose) or use [docker-compose](https://github.com/ngocjr7/bcb_vosy#running-by-python-command)
 
 ### Running by Docker-compose
 
@@ -143,4 +143,6 @@ It also have consensus method, which can return the longest blockchain in the ne
 
 It hold all data about blockchain, it have some method like mine, validate_transaction, return chain, open surveys, ...
 
+#### Vosy
 
+A blockchain-based application for voting system

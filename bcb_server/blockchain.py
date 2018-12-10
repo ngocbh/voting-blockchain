@@ -9,7 +9,11 @@ class Blockchain:
 
     def __init__(self):
         self.unconfirmed_transactions = []
-        self.chain = []
+        self.chain = []    
+        # for validate transaction and return to user. like account in ethereum
+        self.open_surveys = {}
+        # for smart contract
+        self.chain_code = {}
         self.create_genesis_block()
 
     @staticmethod

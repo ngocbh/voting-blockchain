@@ -20,9 +20,6 @@ caPort = '5001'
 # the node's copy of blockchain
 blockchain = Blockchain()
 
-# for validate transaction and return to user. like account in ethereum
-open_surveys = {}
-
 # endpoint to submit a new transaction. This will be used by
 # our application to add new data (posts) to the blockchain
 @app.route('/new_transaction', methods=['POST'])
@@ -64,7 +61,6 @@ def get_transaction():
 def get_open_surveys():
     # make sure we've the longest chain
     global blockchain
-    global open_surveys
     
     url = 'http://{}/consensus'.format(ordererIP + ':' + ordererPort)
     response = requests.get(url)
@@ -77,19 +73,19 @@ def get_open_surveys():
         
 
         # recompute open_surveys
-        open_surveys = {}
+        longest_chain.open_surveys = {}
 
         for block in longest_chain.chain:
-            if not compute_open_surveys(block,open_surveys):
+            if not compute_open_surveys(block,longest_chain.open_surveys):
                 return "Invalid Blockchain", 400
 
         blockchain = longest_chain
 
     surveys = []
-    for _ , survey in open_surveys.items():
+    for _ , survey in blockchain.open_surveys.items():
         surveys.append(survey)
 
-    return jsonify({"length": len(open_surveys),
+    return jsonify({"length": len(blockchain.open_surveys),
                        "surveys": list(surveys)})
 
 
@@ -100,7 +96,6 @@ def get_open_surveys():
 def get_chain():
     # make sure we've the longest chain
     global blockchain
-    global open_surveys
     
     url = 'http://{}/consensus'.format(ordererIP + ':' + ordererPort)
     response = requests.get(url)
@@ -111,10 +106,10 @@ def get_chain():
 
     if len(blockchain.chain) < length and blockchain.check_chain_validity(longest_chain.chain):
         # recompute open_surveys
-        open_surveys = {}
+        longest_chain.open_surveys = {}
 
         for block in longest_chain.chain:
-            if not compute_open_surveys(block,open_surveys):
+            if not compute_open_surveys(block,longest_chain.open_surveys):
                 return "Invalid Blockchain", 400
 
         blockchain = longest_chain
@@ -189,7 +184,7 @@ def mine_unconfirmed_transactions():
 # and then added to the chain.
 @app.route('/add_block', methods=['POST'])
 def validate_and_add_block():
-    global open_surveys
+    global blockchain
 
     block_data = request.get_json()
 
@@ -199,12 +194,12 @@ def validate_and_add_block():
                   block_data["previous_hash"],
                   block_data["nonce"])
 
-    tmp_open_surveys = open_surveys
+    tmp_open_surveys = blockchain.open_surveys
 
     if not compute_open_surveys(block, tmp_open_surveys):
         return "The block was discarded by the node", 400
 
-    open_surveys = tmp_open_surveys
+    blockchain.open_surveys = tmp_open_surveys
 
     proof = block_data['hash']
     added = blockchain.add_block(block, proof)
@@ -231,7 +226,7 @@ def list_node():
 
 
 def validate_transaction(transaction):
-    global open_surveys
+    global blockchain
     #check permission of transaction
     author = transaction['content']['author']
     url = 'http://{}/validate_permission'.format(caIP + ':' + caPort)
@@ -245,21 +240,21 @@ def validate_transaction(transaction):
     questionid = transaction['content']['questionid']
 
     if transaction['type'].lower() == 'open':
-        if questionid in open_surveys:
+        if questionid in blockchain.open_surveys:
             return False
-        open_surveys[questionid] = transaction['content']
+        blockchain.open_surveys[questionid] = transaction['content']
         return True
     elif transaction['type'].lower() == 'close':
-        if questionid in open_surveys and open_surveys[questionid]['author'] == transaction['content']['author']:
-            del open_surveys[questionid]
+        if questionid in blockchain.open_surveys and blockchain.open_surveys[questionid]['author'] == transaction['content']['author']:
+            del blockchain.open_surveys[questionid]
             return True
         return False
     elif transaction['type'].lower() == 'vote':
-        if questionid in open_surveys:
+        if questionid in blockchain.open_surveys:
             vote = transaction['content']['vote']
             author = transaction['content']['author']
-            if author not in open_surveys[questionid]['answers'][vote]:
-                open_surveys[questionid]['answers'][vote].append(author)
+            if author not in blockchain.open_surveys[questionid]['answers'][vote]:
+                blockchain.open_surveys[questionid]['answers'][vote].append(author)
                 return True
             return False
 

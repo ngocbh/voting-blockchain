@@ -126,9 +126,9 @@ this vosy will auto connect to local peer in address `0.0.0.0:5000`
 
 It is simple architecture of my net work
 
-![alt tag](https://raw.githubusercontent.com/ngocjr7/bcb_vosy/master/vosy_app_backup/templates/architecture.png)
+![alt tag](https://raw.githubusercontent.com/ngocjr7/bcb_vosy_backup/master/vosy_app/templates/architecture.png)
 
-![alt tag](https://raw.githubusercontent.com/ngocjr7/bcb_vosy/master/vosy_app_backup/templates/network_sample.png)
+![alt tag](https://raw.githubusercontent.com/ngocjr7/bcb_vosy_backup/master/vosy_app/templates/network_sample.png)
 
 
 #### Certificate Authority

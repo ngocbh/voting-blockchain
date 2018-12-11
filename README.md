@@ -1,15 +1,16 @@
 # A Simple Blockchain-based Voting System
 
 A simple  blockchain-based voting system application from scratch in Python. It's avalible to run with multipeer.
+( It is old version ( for backup ) , please checkout https://github.com/ngocjr7/bcb_vosy to get newest version ) 
 
 ## How it looks
 
-![alt tag](https://raw.githubusercontent.com/ngocjr7/bcb_vosy/master/vosy_app/templates/sample.png)
+![alt tag](https://raw.githubusercontent.com/ngocjr7/bcb_vosy_backup/master/vosy_app/templates/sample.png)
 
 ## Instructions to run
 
-To understand, read [system architechture](https://github.com/ngocjr7/bcb_vosy#tutorial)
-This project can run separately by [python](https://github.com/ngocjr7/bcb_vosy#running-by-docker-compose) or use [docker-compose](https://github.com/ngocjr7/bcb_vosy#running-by-python-command)
+To understand, read [system architechture](https://github.com/ngocjr7/bcb_vosy_backup#tutorial)
+This project can run separately by [python](https://github.com/ngocjr7/bcb_vosy_backup#running-by-docker-compose) or use [docker-compose](https://github.com/ngocjr7/bcb_vosy_backup#running-by-python-command)
 
 ### Running by Docker-compose
 
@@ -125,9 +126,9 @@ this vosy will auto connect to local peer in address `0.0.0.0:5000`
 
 It is simple architecture of my net work
 
-![alt tag](https://raw.githubusercontent.com/ngocjr7/bcb_vosy/master/vosy_app/templates/architecture.png)
+![alt tag](https://raw.githubusercontent.com/ngocjr7/bcb_vosy/master/vosy_app_backup/templates/architecture.png)
 
-![alt tag](https://raw.githubusercontent.com/ngocjr7/bcb_vosy/master/vosy_app/templates/network_sample.png)
+![alt tag](https://raw.githubusercontent.com/ngocjr7/bcb_vosy/master/vosy_app_backup/templates/network_sample.png)
 
 
 #### Certificate Authority

@@ -1,12 +1,16 @@
 from flask import Flask
 from flask import render_template, redirect, request, jsonify
+from math import *
 
 from utils import get_ip
 
 import datetime, time
 import json
-
+import codecs
 import requests
+import os
+
+__location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
 app = Flask(__name__)
 
@@ -16,7 +20,14 @@ def my_utility_processor():
     def len_list(li):
         return len(li)
 
-    return dict(len=len_list)
+    def maxvote(post):
+        maxvote = 0
+        for answer, votes in post['answers'].items():
+            maxvote = max(maxvote,len(votes))
+
+        return maxvote
+
+    return dict(len=len_list, maxvote=maxvote)
 
 
 # The node with which our application interacts, there can be multiple
@@ -92,6 +103,7 @@ def submit_textarea():
     questionid = request.form["questionid"]
     question = request.form["question"]
     answersList = request.form["answer"].split('|')
+    opening_time = int(request.form["opening_time"])*60
     answers = {}
 
     for answer in answersList:
@@ -103,6 +115,8 @@ def submit_textarea():
             'questionid': questionid,
             'question': question,
             'answers': answers,
+            'opening_time': opening_time,
+            'status': 'opening',
             'author': author + ':5000',
             'timestamp': time.time()
         }
@@ -113,6 +127,20 @@ def submit_textarea():
 
     requests.post(new_tx_address,
                   json=post_object,
+                  headers={'Content-type': 'application/json'})
+
+    #call smart contract to count down
+    contract_object = {
+        'type' : 'execute',
+        'content': {
+            'contract': 'count_down_opening_time',
+            'arguments': [opening_time, author, questionid, CONNECTED_NODE_ADDRESS],
+            'author': author + ':5000'
+        }
+    }
+
+    requests.post(new_tx_address,
+                  json=contract_object,
                   headers={'Content-type': 'application/json'})
 
     return redirect('/')
@@ -173,6 +201,34 @@ def vote():
 
     return redirect('/')
 
+@app.route('/update_chaincode', methods=['GET','POST'])
+def update_chaincode():
+    file = os.path.join(__location__,'chaincode.py')
+    code = ''
+
+    with codecs.open(file,encoding='utf8',mode='r') as inp:
+        code = inp.read()
+
+    author = get_ip(request.remote_addr)
+
+    post_object = {
+        'type' : 'smartcontract',
+        'content' : {
+            'code': code,
+            'author': author + ':5000',
+            'timestamp': time.time()
+        }
+    }
+
+    # Submit a transaction
+    new_tx_address = "{}/new_transaction".format(CONNECTED_NODE_ADDRESS)
+
+    requests.post(new_tx_address,
+                  json=post_object,
+                  headers={'Content-type': 'application/json'})
+
+    return redirect('/')
+    
 
 def timestamp_to_string(epoch_time):
     return datetime.datetime.fromtimestamp(epoch_time).strftime('%H:%M')
@@ -191,6 +247,6 @@ if __name__ == '__main__':
     CONNECTED_NODE_ADDRESS = 'http://{}:5000'.format(args.host)
 
     print('My ip address : ' + get_ip())
-    
+
     app.run(host='0.0.0.0', port=port, debug = True, threaded = True)
 

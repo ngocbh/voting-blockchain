@@ -6,10 +6,11 @@
 	<center>
 		<a href="/mine" target="_blank"><button type="button" class="themeBtn3">Mine</button></a>
 		<a href="/"><button type="button" class="themeBtn">Resync</button></a>
+		<a href="/update_chaincode"><button type="button" class="themeBtn4">Update Chaincode</button></a>
 		<a href="/pending_tx" target="_blank><button type="button" class="themeBtn2">Pending Transaction</button></a>
 		<a href="/list_nodes" target="_blank"><button type="button" class="themeBtn4">List Node</button></a>
 	</center>
-
+	<center><p style="color:red">To create new survey, please click Update Chaincode and Mine before</p></center>
 	<!-- Form Name -->
 	<legend>-> Post New Survey</legend>
 
@@ -40,6 +41,14 @@
 	          <label class="col-md-12" for="email">Answer</label>  
 	          <div class="col-md-12">
 	          <input name="answer" type="text" placeholder="ans1|ans2|ans3|..." class="form-control input-md" required="">
+	          </div>
+	        </div>
+
+	        <!-- Text input answer-->
+	        <div class="form-group">
+	          <label class="col-md-12" for="email">Opening Time ( minute )</label>  
+	          <div class="col-md-12">
+	          <input name="opening_time" type="text" placeholder="3" class="form-control input-md" required="">
 	          </div>
 	        </div>
 
@@ -88,13 +97,33 @@
 	                <div class="post-description"> 
 	                    <p>{{post.question}}</p>
 	                    {% for answer, votes in post.answers.items() %} 
-	                    <div class="stats">
-	                        <a href="/vote?id={{post.questionid}}&answer={{answer}}" class="btn btn-default stat-item">
-	                            {{answer}} | <i class="fa fa-thumbs-up icon"></i>{{len(votes)}}
-	                        </a>
+		                    {% if post.status == 'opening' %}
+		                    <div class="stats">
+		                        <a href="/vote?id={{post.questionid}}&answer={{answer}}" class="btn btn-default stat-item">
+		                            {{answer}} | <i class="fa fa-thumbs-up icon"></i>{{len(votes)}}
+		                        </a>
 
-	                        {{votes}}
-	                    </div>
+		                        {{votes}}
+		                    </div>
+		                    {% else %}
+		                    	{% if len(votes) == maxvote(post) %}
+			                    <div class="stats">
+			                        <a href="/vote?id={{post.questionid}}&answer={{answer}}" class="btn btn-primary stat-item">
+			                            {{answer}} | <i class="fa fa-thumbs-up icon"></i>{{len(votes)}}
+			                        </a>
+
+			                        {{votes}}
+			                    </div>
+			                    {% else %}
+			                    <div class="stats">
+			                        <a href="/vote?id={{post.questionid}}&answer={{answer}}" class="btn btn-default stat-item">
+			                            {{answer}} | <i class="fa fa-thumbs-up icon"></i>{{len(votes)}}
+			                        </a>
+
+			                        {{votes}}
+			                    </div>
+			                    {% endif %}
+	                    	{% endif %}
 	                    {% endfor %} 
 	                </div>
 	            </div>

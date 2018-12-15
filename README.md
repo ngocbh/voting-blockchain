@@ -1,16 +1,15 @@
 # A Simple Blockchain-based Voting System
 
 A simple  blockchain-based voting system application from scratch in Python. It's avalible to run with multipeer.
-( It is old version ( for backup ) , please checkout https://github.com/ngocjr7/bcb_vosy to get newest version ) 
 
 ## How it looks
 
-![alt tag](https://raw.githubusercontent.com/ngocjr7/bcb_vosy_backup/master/vosy_app/templates/sample.png)
+![alt tag](https://raw.githubusercontent.com/ngocjr7/bcb_vosy/master/vosy_app/templates/sample.png)
 
 ## Instructions to run
 
-To understand, read [system architechture](https://github.com/ngocjr7/bcb_vosy_backup#tutorial)
-This project can run separately by [python](https://github.com/ngocjr7/bcb_vosy_backup#running-by-docker-compose) or use [docker-compose](https://github.com/ngocjr7/bcb_vosy_backup#running-by-python-command)
+To understand, read [system architecture](https://github.com/ngocjr7/bcb_vosy#tutorial)
+This project can run separately by [python](https://github.com/ngocjr7/bcb_vosy#running-by-docker-compose) or use [docker-compose](https://github.com/ngocjr7/bcb_vosy#running-by-python-command)
 
 ### Running by Docker-compose
 
@@ -94,7 +93,7 @@ Vosy need to know aleast 1 peer so you need to pass peer ip address to vosy app 
 python vosy_app/vosy.py
 ```
 
-for example, with window users, ip address `0.0.0.0` is not avalible, so you need to run in localhost, so you have to follow this command in 4 cmd:
+##### for example, with window users, ip address `0.0.0.0` is not avalible, so you need to run in localhost, so you have to follow this command in 4 cmd:
 
 ```
 python bcb_server/orderer.py
@@ -106,7 +105,7 @@ python bcb_server/certificate_authority.py --orderer 127.0.0.1
 python bcb_server/peer.py --orderer 127.0.0.1 --ca 127.0.0.1
 ```
 ```
-python bcb_server/vosy.py --host 127.0.0.1
+python vosy_app/vosy.py --host 127.0.0.1
 ```
 
 ###### In second machine
@@ -124,11 +123,11 @@ this vosy will auto connect to local peer in address `0.0.0.0:5000`
 
 ## Tutorial
 
-It is simple architecture of my net work
+It is simple architecture of my network
 
-![alt tag](https://raw.githubusercontent.com/ngocjr7/bcb_vosy_backup/master/vosy_app/templates/architecture.png)
+![alt tag](https://raw.githubusercontent.com/ngocjr7/bcb_vosy/master/vosy_app/templates/architecture.png)
 
-![alt tag](https://raw.githubusercontent.com/ngocjr7/bcb_vosy_backup/master/vosy_app/templates/network_sample.png)
+![alt tag](https://raw.githubusercontent.com/ngocjr7/bcb_vosy/master/vosy_app/templates/network_sample.png)
 
 
 #### Certificate Authority
@@ -147,3 +146,29 @@ It hold all data about blockchain, it have some method like mine, validate_trans
 #### Vosy
 
 A blockchain-based application for voting system
+
+#### How to use
+
+* Mine : mine unconfirmed transaction
+* Resync : Reload front-end
+* Update Chaincode : Load smart contract from chaincode.py in vosy_app to blockchain transaction
+* Pending Transaction : List unconfirmed transaction
+* List Node : List node in the network
+
+!!! Note. If you want to use chaincode, you need to click to Update Chaincode to load chaincode.py to blockchain transaction and mine it to confirm this chaincode. After that. you can create new survey ( I writed a simple chaincode count_down_opening_time to auto close survey after a period of time ). You can write your own contract and use it by create new execution transaction like this ( You need to Update Chaincode and Mine it before use ) : 
+
+```
+[
+  {
+    "content": {
+      "author": "192.168.1.38:5000", 
+      "contract": "count_down_opening_time",
+      "argument": [opening_time, author, questionid, CONNECTED_NODE_ADDRESS],
+      "timestamp": 1544369155.5413423
+    }, 
+    "timestamp": 1544369155.5453415, 
+    "type": "execute"
+  }
+]
+```
+

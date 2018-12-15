@@ -13,7 +13,7 @@ class Blockchain:
         # for validate transaction and return to user. like account in ethereum
         self.open_surveys = {}
         # for smart contract
-        self.chain_code = {}
+        self.chain_code = {'chain': self.chain, 'open_surveys': self.open_surveys, 'unconfirmed_transactions': self.unconfirmed_transactions}
         self.create_genesis_block()
 
     @staticmethod

@@ -7,6 +7,7 @@ from flask import Flask, request, jsonify
 import json
 import requests
 import time
+import threading
 
 
 app = Flask(__name__)
@@ -76,7 +77,7 @@ def get_open_surveys():
         longest_chain.open_surveys = {}
 
         for block in longest_chain.chain:
-            if not compute_open_surveys(block,longest_chain.open_surveys):
+            if not compute_open_surveys(block,longest_chain.open_surveys,longest_chain.chain_code):
                 return "Invalid Blockchain", 400
 
         blockchain = longest_chain
@@ -109,7 +110,7 @@ def get_chain():
         longest_chain.open_surveys = {}
 
         for block in longest_chain.chain:
-            if not compute_open_surveys(block,longest_chain.open_surveys):
+            if not compute_open_surveys(block,longest_chain.open_surveys, longest_chain.chain_code):
                 return "Invalid Blockchain", 400
 
         blockchain = longest_chain
@@ -195,11 +196,13 @@ def validate_and_add_block():
                   block_data["nonce"])
 
     tmp_open_surveys = blockchain.open_surveys
+    tmp_chain_code = blockchain.chain_code
 
-    if not compute_open_surveys(block, tmp_open_surveys):
+    if not compute_open_surveys(block, tmp_open_surveys, tmp_chain_code):
         return "The block was discarded by the node", 400
 
     blockchain.open_surveys = tmp_open_surveys
+    blockchain.chain_code = tmp_chain_code
 
     proof = block_data['hash']
     added = blockchain.add_block(block, proof)
@@ -237,56 +240,84 @@ def validate_transaction(transaction):
         return False
 
     #check validate transaction and compute open_surveys
-    questionid = transaction['content']['questionid']
-
     if transaction['type'].lower() == 'open':
+        questionid = transaction['content']['questionid']
         if questionid in blockchain.open_surveys:
             return False
         blockchain.open_surveys[questionid] = transaction['content']
         return True
     elif transaction['type'].lower() == 'close':
-        if questionid in blockchain.open_surveys and blockchain.open_surveys[questionid]['author'] == transaction['content']['author']:
-            del blockchain.open_surveys[questionid]
+        questionid = transaction['content']['questionid']
+        if questionid in blockchain.open_surveys and blockchain.open_surveys[questionid]['author'] == transaction['content']['author'] and blockchain.open_surveys[questionid]['status'] == 'opening':
+            blockchain.open_surveys[questionid]['status'] = 'closed'
             return True
         return False
     elif transaction['type'].lower() == 'vote':
-        if questionid in blockchain.open_surveys:
+        questionid = transaction['content']['questionid']
+        if questionid in blockchain.open_surveys and blockchain.open_surveys[questionid]['status'] == 'opening':
             vote = transaction['content']['vote']
             author = transaction['content']['author']
             if author not in blockchain.open_surveys[questionid]['answers'][vote]:
                 blockchain.open_surveys[questionid]['answers'][vote].append(author)
                 return True
             return False
+    elif transaction['type'].lower() == 'smartcontract':
+        try:
+            exec(transaction['content']['code'],blockchain.chain_code,blockchain.chain_code)
+            return True
+        except:
+            print('Error when create new contract')
+            return False
+    elif transaction['type'].lower() == 'execute':
+        try:
+            thread = threading.Thread(target=blockchain.chain_code[transaction['content']['contract']], args=transaction['content']['arguments'])
+            thread.start()
+            return True
+        except:
+            print('Error when execute chain_code {}'.format(transaction['content']['contract']))
+            return False
 
 
-def compute_open_surveys(block, open_surveys):
+def compute_open_surveys(block, open_surveys, chain_code):
     for transaction in block.transactions:
         author = transaction['content']['author']
         url = 'http://{}/validate_permission'.format(caIP + ':' + caPort)
         response = requests.post(url,json={'peer' : author, 'action' : transaction['type']})
 
         if response.json()['decision'] != 'accept':
+            print("Reject from server")
             return False
 
         #check validate transaction and compute open_surveys
-        questionid = transaction['content']['questionid']
 
         if transaction['type'].lower() == 'open':
-            if questionid in open_surveys:
-                return False
-            open_surveys[questionid] = transaction['content']
+            questionid = transaction['content']['questionid']
+            if questionid not in open_surveys:
+                open_surveys[questionid] = transaction['content']
+                return True
         elif transaction['type'].lower() == 'close':
-            if questionid in open_surveys and open_surveys[questionid]['author'] == transaction['content']['author']:
-                del open_surveys[questionid]
-            return False
+            questionid = transaction['content']['questionid']
+            if questionid in open_surveys and open_surveys[questionid]['author'] == transaction['content']['author'] and open_surveys[questionid]['status'] == 'opening':
+                open_surveys[questionid]['status'] = 'closed'
+                return True
         elif transaction['type'].lower() == 'vote':
-            if questionid in open_surveys:
+            questionid = transaction['content']['questionid']
+            if questionid in open_surveys and open_surveys[questionid]['status'] == 'opening':
                 vote = transaction['content']['vote']
                 author = transaction['content']['author']
                 if author not in open_surveys[questionid]['answers'][vote]:
                     open_surveys[questionid]['answers'][vote].append(author)
+                    return True
+        elif transaction['type'].lower() == 'smartcontract':
+            try:
+                exec(transaction['content']['code'],chain_code)
+                return True
+            except:
+                print('Error when create new contract')
                 return False
-
+        else:
+            return True
+        return False
     return True
 
 # ask ca server to join network

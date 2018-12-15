@@ -17,7 +17,7 @@ peers = set()
 groups = {}
 # list permission for each group
 # O : Open | C : Close | V : Vote
-permission = { 'admin' : 'OCVSE', 'peer' : 'OCV', 'guest' : 'V' }
+permission = { 'admin' : 'OCVSE', 'peer' : 'OCVSE', 'guest' : 'V' }
 
 groups[get_ip() + ':5000'] = 'admin'
 
@@ -40,7 +40,8 @@ def validate_connection():
 	peers.add(node)
 	# add some role with node in here
 	# set permission for node 
-	groups[node] = 'peer'
+	if node not in groups:
+		groups[node] = 'peer'
 
 	url = 'http://{}:5002/add_node'.format(orderer)
 	response = requests.post(url,json={'ipaddress': request_addr, 'port': data['port']})

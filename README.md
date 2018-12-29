@@ -8,7 +8,7 @@ A simple  blockchain-based voting system application from scratch in Python. It'
 
 ## Instructions to run
 
-To understand, read [system architecture](https://github.com/ngocjr7/bcb_vosy#tutorial)
+To understand, read [system architecture](https://github.com/ngocjr7/bcb_vosy/blob/master/docs/bcb_vosy.pdf)
 This project can run separately by [python](https://github.com/ngocjr7/bcb_vosy#running-by-docker-compose) or use [docker-compose](https://github.com/ngocjr7/bcb_vosy#running-by-python-command)
 
 ### Running by Docker-compose

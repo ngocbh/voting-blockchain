@@ -4,7 +4,7 @@ A simple  blockchain-based voting system application from scratch in Python. It'
 
 ## How it looks
 
-![alt tag](https://raw.githubusercontent.com/ngocjr7/bcb_vosy/master/docs/sample.png)
+![alt tag](https://raw.githubusercontent.com/ngocjr7/voting-blockchain/master/docs/sample.png)
 
 
 #### How to use
@@ -34,8 +34,8 @@ A simple  blockchain-based voting system application from scratch in Python. It'
 
 ## Instructions to run
 
-To understand, read [system architecture](https://github.com/ngocjr7/bcb_vosy/blob/master/docs/bcb_vosy.pdf)
-This project can run separately by [python](https://github.com/ngocjr7/bcb_vosy#running-by-docker-compose) or use [docker-compose](https://github.com/ngocjr7/bcb_vosy#running-by-python-command)
+To understand, read [system architecture](https://github.com/ngocjr7/voting-blockchain/blob/master/docs/bcb_vosy.pdf)
+This project can run separately by [python](https://github.com/ngocjr7/voting-blockchain#running-by-docker-compose) or use [docker-compose](https://github.com/ngocjr7/voting-blockchain#running-by-python-command)
 
 ### Running by Docker-compose
 
@@ -151,9 +151,9 @@ this vosy will auto connect to local peer in address `0.0.0.0:5000`
 
 It is simple architecture of my network
 
-![alt tag](https://raw.githubusercontent.com/ngocjr7/bcb_vosy/master/docs/architecture.png)
+![alt tag](https://raw.githubusercontent.com/ngocjr7/voting-blockchain/master/docs/architecture.png)
 
-![alt tag](https://raw.githubusercontent.com/ngocjr7/bcb_vosy/master/docs/network_sample.png)
+![alt tag](https://raw.githubusercontent.com/ngocjr7/voting-blockchain/master/docs/network_sample.png)
 
 
 #### Certificate Authority

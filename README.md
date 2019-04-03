@@ -1,6 +1,6 @@
 # A Simple Blockchain-based Voting System
 
-A simple  blockchain-based voting system application from scratch in Python. It's available for running with multipeer.
+A simple  blockchain-based voting system application built from scratch by Python. It's available for running with multipeer.
 
 ## How it looks
 

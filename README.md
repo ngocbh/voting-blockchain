@@ -15,7 +15,7 @@ A simple  blockchain-based voting system application built from scratch by Pytho
 * Pending Transaction : List unconfirmed transaction
 * List Node : List node in the network
 
-!!! Note. If you want to use chaincode, you need to click to Update Chaincode to load chaincode.py to blockchain transaction and mine it to confirm this chaincode. After that. you can create new survey ( I writed a simple chaincode count_down_opening_time to auto close survey after a period of time ). You can write your own contract and use it by create new execution transaction like this ( You need to Update Chaincode and Mine it before use ) : 
+!!! Note. If you want to use chaincode, you need to click Update Chaincode for loading chaincode.py into blockchain transaction and mine it to confirm this chaincode. After that. you can create new survey ( I writed a simple chaincode count_down_opening_time to auto close survey after a period of time ). You can write your own contract and use it by create new execution transaction like this ( You need to Update Chaincode and Mine it before use ) : 
 
 ```
 [

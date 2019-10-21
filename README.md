@@ -8,6 +8,7 @@ A simple  blockchain-based voting system application built from scratch by Pytho
 
 
 #### How to use
+-> Note: At the first run, click **Update Chaincode** and **Mine** to init chaincode (I writed a simple chaincode ```count_down_opening_time``` to auto close survey after a period of time) before using.
 
 * Mine : mine unconfirmed transaction
 * Resync : Reload front-end
@@ -15,31 +16,13 @@ A simple  blockchain-based voting system application built from scratch by Pytho
 * Pending Transaction : List unconfirmed transaction
 * List Node : List node in the network
 
-!!! Note. If you want to use chaincode, you need to click Update Chaincode for loading chaincode.py into blockchain transaction and mine it to confirm this chaincode. After that. you can create new survey ( I writed a simple chaincode count_down_opening_time to auto close survey after a period of time ). You can write your own contract and use it by create new execution transaction like this ( You need to Update Chaincode and Mine it before use ) : 
-
-```
-[
-{
-"content": {
-"author": "192.168.1.38:5000", 
-"contract": "count_down_opening_time",
-"argument": [opening_time, author, questionid, CONNECTED_NODE_ADDRESS],
-"timestamp": 1544369155.5413423
-}, 
-"timestamp": 1544369155.5453415, 
-"type": "execute"
-}
-]
-```
-
 ## Instructions to run
 
 To understand, read [system architecture](https://github.com/ngocjr7/voting-blockchain/blob/master/docs/bcb_vosy.pdf)
 This project can run separately by [python](https://github.com/ngocjr7/voting-blockchain#running-by-docker-compose) or use [docker-compose](https://github.com/ngocjr7/voting-blockchain#running-by-python-command)
 
 ### Running by Docker-compose
-
-NOTE!!! It can only be used in linux, or maybe window. I have some problem with macOS. I use remote_addr to identify user. But every request from outside of docker having the same remote address is 172.18.0.1. It cause `network_mode: "bridge"` is default in Docker. If you have any problem with request ip address, try to uncomment `network_mode: "host"` in `docker-compose.yml`. It just works in Linux. Docker in macOS have some limited and I cannot find any good solution. If you have any idea, please report to me. Thank you.
+-> NOTE: Only available for linux user. If you have any problem with request ip address, try to uncomment `network_mode: "host"` in `docker-compose.yml`.
 
 #### Prerequisites
 
@@ -70,7 +53,7 @@ docker-compose down
 ```
 
 ###### In second machine
-You have to provide IP address of machine 1 in `.env` file.
+You have to provide IP address of machine 1 in `.env` file. For example:
 
 ```
 ORDERER_IP=192.168.43.162
@@ -119,7 +102,7 @@ Vosy need to know aleast 1 peer so you need to pass peer ip address to vosy app 
 python vosy_app/vosy.py
 ```
 
-##### for example, with window users, ip address `0.0.0.0` is not avalible, so you need to run in localhost, so you have to follow this command in 4 cmd:
+##### for example, with window users, ip address `0.0.0.0` is not available, so you need to run in `127.0.0.1` instead, so you have to follow this command in 4 cmd:
 
 ```
 python bcb_server/orderer.py

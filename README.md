@@ -8,7 +8,7 @@ A simple  blockchain-based voting system application built from scratch by Pytho
 
 
 #### How to use
--> Note: At the first run, click **Update Chaincode** and **Mine** to init chaincode (I writed a simple chaincode ```count_down_opening_time``` to auto close survey after a period of time) before using.
+-> Note: At the first run, click **Update Chaincode** and **Mine** to init chaincode (I wrote a simple chaincode ```count_down_opening_time``` to auto close survey after a period of time) before using.
 
 * Mine : mine unconfirmed transaction
 * Resync : Reload front-end

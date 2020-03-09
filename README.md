@@ -19,7 +19,7 @@ A simple  blockchain-based voting system application built from scratch by Pytho
 ## Instructions to run
 
 To understand, read [system architecture](https://github.com/ngocjr7/voting-blockchain/blob/master/docs/bcb_vosy.pdf)
-This project can run separately by [python](https://github.com/ngocjr7/voting-blockchain#running-by-docker-compose) or use [docker-compose](https://github.com/ngocjr7/voting-blockchain#running-by-python-command)
+This project can run separately by [python](https://github.com/ngocjr7/voting-blockchain#running-by-python-command) or use [docker-compose](https://github.com/ngocjr7/voting-blockchain#running-by-docker-compose)
 
 ### Running by Docker-compose
 -> NOTE: Only available for linux user. If you have any problem with request ip address, try to uncomment `network_mode: "host"` in `docker-compose.yml`.

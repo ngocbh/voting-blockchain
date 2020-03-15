@@ -1,6 +1,7 @@
 # A Simple Blockchain-based Voting System
 
 A simple  blockchain-based voting system application built from scratch by Python. It's available for running with multipeer.
+You can see [video demo](https://www.youtube.com/watch?v=CqNoDjuf6EE), or tutorials [part 1](https://medium.com/datadriveninvestor/build-a-blockchain-application-from-scratch-in-python-understanding-blockchain-1a6f1592e42a), [part 2(not ready now)]().
 
 ## How it looks
 
@@ -18,7 +19,6 @@ A simple  blockchain-based voting system application built from scratch by Pytho
 
 ## Instructions to run
 
-To understand, read [system architecture](https://github.com/ngocjr7/voting-blockchain/blob/master/docs/bcb_vosy.pdf)
 This project can run separately by [python](https://github.com/ngocjr7/voting-blockchain#running-by-python-command) or use [docker-compose](https://github.com/ngocjr7/voting-blockchain#running-by-docker-compose)
 
 ### Running by Docker-compose
@@ -131,6 +131,8 @@ python vosy_app/vosy.py
 this vosy will auto connect to local peer in address `0.0.0.0:5000`
 
 ## Tutorial
+
+You can see [video demo](https://www.youtube.com/watch?v=CqNoDjuf6EE), or tutorials [part 1](https://medium.com/datadriveninvestor/build-a-blockchain-application-from-scratch-in-python-understanding-blockchain-1a6f1592e42a), [part 2(not ready now)]().
 
 It is simple architecture of my network
 
